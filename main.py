@@ -1,10 +1,14 @@
 # Подключаем графическую библиотеку
 from tkinter import *
 
-# Подключаем модули, которые отвечают
-# за работу со временем и случайными числами
+# Подключаем модуль, который
+# отвечают за работу со временем
 import time
-import random
+
+# Импортируем сущности игры
+from ball import Ball
+from paddle import Paddle
+from score import Score
 
 # Создаём новый объект — окно с игровым полем.
 # В нашем случае переменная окна называется tk,
@@ -18,8 +22,32 @@ tk.title('Арканоид')
 tk.resizable(0, 0)
 
 # Создаём новый холст, на котором и будем рисовать игру
-canvas = Canvas(tk, width=500, height=400)
-
+canvas = Canvas(tk, width=500, height=400, highlightthickness=0)
 canvas.pack()
 
-tk.mainloop()
+tk.update()
+
+# Создаем экземпляры объектов
+score = Score(canvas, 'green')  # Зеленый счет
+paddle = Paddle(canvas, 'black', 2)  # Черная платформа
+ball = Ball(canvas, paddle, score, 'red', 2)  # Красный шарик
+
+# Пока шарик не коснулся дна
+while not ball.hit_bottom:
+
+    # Если игра запущена
+    if paddle.started:
+        # Запускаем движение шарика и платформы
+        ball.draw()
+        paddle.draw()
+
+    # Оновляем игровое поле, чтобы все изменения отрисовались
+    tk.update_idletasks()
+    tk.update()
+
+    # Замираем на одну сотую секунды, чтобы движение элементов выглядело плавно
+    time.sleep(0.01)
+
+# Если программа дошла досюда, значит, шарик коснулся дна.
+# Ждём 3 секунды, пока игрок прочитает финальную надпись, и завершаем игру.
+time.sleep(3)
